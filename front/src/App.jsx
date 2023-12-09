@@ -1,9 +1,9 @@
-import Hello from "./components/Hello";
+import LoginForm from "./components/LoginForm";
 
 function App() {
   return (
     <>
-      <Hello />
+      <LoginForm />
     </>
   );
 }

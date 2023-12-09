@@ -5,31 +5,36 @@ import "./index.css";
 
 //providers
 import { AuthProvider } from "./context/AuthProvider";
+import { WebsocketProvider } from "./context/websocketProvider";
 
 // Components
 import App from "./App.jsx";
 import Signup from "./components/Signup";
 import RequireAuth from "./components/RequireAuth";
-import Protected from "./components/Protected";
 import PersistentLogin from "./components/PersistentLogin";
 import ErrorPage from "./errorPage";
+import Lobby from "./components/Lobby";
+import Room from "./components/Room";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/signup" element={<Signup />}></Route>
+        <WebsocketProvider>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/signup" element={<Signup />}></Route>
 
-          <Route element={<PersistentLogin />}>
-            <Route element={<RequireAuth />}>
-              <Route path="/protected" element={<Protected />} />
+            <Route element={<PersistentLogin />}>
+              <Route element={<RequireAuth />}>
+                <Route path="/lobby" element={<Lobby />} />
+                <Route path="/room" element={<Room />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route path="*" element={<ErrorPage />} />
-        </Routes>
+            <Route path="*" element={<ErrorPage />} />
+          </Routes>
+        </WebsocketProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

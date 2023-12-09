@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
@@ -11,7 +11,7 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/protected";
+  const from = location.state?.from?.pathname || "/lobby";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ export default function LoginForm() {
         setEmail("");
         setPwd("");
         const user = {
-          useID: resData.ID,
+          userID: resData.ID,
           email: resData.email,
         };
 

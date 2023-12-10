@@ -4,7 +4,7 @@ export default function ChatBody({ data }) {
   return (
     <>
       {data.map((message, index) => {
-        if (message.type == "recv") {
+        if (message.type == "self") {
           return (
             <div
               className="flex flex-col mt-2 w-full text-right justify-end"

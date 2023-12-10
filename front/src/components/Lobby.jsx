@@ -57,14 +57,14 @@ export default function Lobby() {
 
   const joinRoom = (roomID) => {
     const ws = new WebSocket(
-      `${import.meta.env.VITE_WS_BASE_URL}/ws/joinRoom/${roomID}?userID=${
+      `${import.meta.env.VITE_WS_BASE_URL}/ws/joinRoom/${roomID}?userId=${
         auth.userID
       }&email=${auth.email}`
     );
 
     if (ws.OPEN) {
       setConn(ws);
-      navigate("/room", { replace: true });
+      navigate("/room");
     }
   };
 

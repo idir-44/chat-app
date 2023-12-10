@@ -25,7 +25,7 @@ type MyJWTClaims struct {
 	jwt.StandardClaims
 }
 
-const secretKey = "secret" // this should be in an .env file but la flemme
+const secretKey = "secret" // this should be in an .env file
 
 func CreateUser(c *gin.Context) {
 

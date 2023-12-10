@@ -36,9 +36,10 @@ func main() {
 	router.GET("/logout", controllers.Logout)
 
 	router.POST("/ws/createRoom", wsHandler.CreateRoom)
-	router.GET("/ws/joinRoom/:roomId", wsHandler.JoinRoom)
 	router.GET("/ws/getRooms", wsHandler.GetRooms)
 	router.GET("/ws/getClients/:roomId", wsHandler.GetClients)
+
+	router.GET("/ws/joinRoom/:roomId", wsHandler.JoinRoom)
 
 	router.Run("localhost:" + port)
 

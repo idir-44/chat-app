@@ -18,7 +18,7 @@
 
 1. Go installation:
 
-[Install go](https://go.dev/doc/install)
+- [Install go](https://go.dev/doc/install)
 
 2. Navigate to the server directory:
 

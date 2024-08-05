@@ -18,14 +18,16 @@
 
 1. Go installation:
 
-- [Install go](https://go.dev/doc/install)
+-[Install go](https://go.dev/doc/install)
+
+-[Install Docker](https://docs.docker.com/engine/install/)
+
+-[Install entr for live reload](https://github.com/eradman/entr)
 
 2. Navigate to the server directory:
 
-   ```bash
-   cd server
+```bash
+cd server
 
-   go mod tidy
-
-   go run main.go
-   ```
+make reset
+```

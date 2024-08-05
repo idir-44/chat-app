@@ -3,16 +3,16 @@ package ws
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/labstack/echo/v4"
 )
 
-type Handler struct {
+type WsHandler struct {
 	hub *Hub
 }
 
-func NewHundler(h *Hub) *Handler {
-	return &Handler{
+func NewHundler(h *Hub) *WsHandler {
+	return &WsHandler{
 		hub: h,
 	}
 }
@@ -22,12 +22,11 @@ type CreateRoomReq struct {
 	Name string `json:"name"`
 }
 
-func (h *Handler) CreateRoom(c *gin.Context) {
+func (h *WsHandler) CreateRoom(c echo.Context) error {
 	var req CreateRoomReq
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.Bind(&req); err != nil {
+		return err
 	}
 
 	h.hub.Rooms[req.ID] = &Room{
@@ -36,7 +35,7 @@ func (h *Handler) CreateRoom(c *gin.Context) {
 		Clients: make(map[string]*Client),
 	}
 
-	c.JSON(http.StatusOK, req)
+	return c.JSON(http.StatusOK, req)
 }
 
 var upgrader = websocket.Upgrader{
@@ -47,16 +46,15 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func (h *Handler) JoinRoom(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+func (h *WsHandler) JoinRoom(c echo.Context) error {
+	conn, err := upgrader.Upgrade(c.Response().Writer, c.Request(), nil)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 
 	roomID := c.Param("roomId")
-	clientID := c.Query("userId")
-	email := c.Query("email")
+	clientID := c.QueryParam("userId")
+	email := c.QueryParam("email")
 
 	cl := &Client{
 		Conn:    conn,
@@ -80,6 +78,8 @@ func (h *Handler) JoinRoom(c *gin.Context) {
 	go cl.writeMessage()
 	cl.readMessage(h.hub)
 
+	return nil
+
 }
 
 type RoomRes struct {
@@ -87,7 +87,7 @@ type RoomRes struct {
 	Name string `json:"name"`
 }
 
-func (h *Handler) GetRooms(c *gin.Context) {
+func (h *WsHandler) GetRooms(c echo.Context) error {
 	rooms := make([]RoomRes, 0)
 
 	for _, room := range h.hub.Rooms {
@@ -97,7 +97,7 @@ func (h *Handler) GetRooms(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, rooms)
+	return c.JSON(http.StatusOK, rooms)
 
 }
 
@@ -106,7 +106,7 @@ type ClientRes struct {
 	Email string `json:"email"`
 }
 
-func (h *Handler) GetClients(c *gin.Context) {
+func (h *WsHandler) GetClients(c echo.Context) error {
 	var clients []ClientRes
 
 	roomId := c.Param("roomId")
@@ -123,5 +123,5 @@ func (h *Handler) GetClients(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, clients)
+	return c.JSON(http.StatusOK, clients)
 }

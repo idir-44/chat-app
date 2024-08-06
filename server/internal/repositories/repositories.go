@@ -15,4 +15,5 @@ func NewRepository(db *bun.DB) Repository {
 
 type Repository interface {
 	CreateUser(req models.User) (models.User, error)
+	GetUserByEmail(email string) (models.User, error)
 }

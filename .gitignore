@@ -25,3 +25,4 @@ front/.env
 
 
 server/.env
+server/*.rest

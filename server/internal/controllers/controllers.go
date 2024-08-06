@@ -15,6 +15,8 @@ func RegisterHandlers(routerGroup *server.Router, srv services.Service, wsHandle
 
 	routerGroup.POST("/users", c.createUser)
 
+	routerGroup.POST("/login", c.login)
+
 	// Websocket handlers
 	routerGroup.POST("/ws/createRoom", wsHandler.CreateRoom)
 	routerGroup.GET("/ws/getRooms", wsHandler.GetRooms)

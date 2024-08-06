@@ -15,4 +15,5 @@ func NewService(repo repositories.Repository) Service {
 
 type Service interface {
 	CreateUser(req models.User) (models.User, error)
+	Login(req models.LoginRequest) (string, error)
 }

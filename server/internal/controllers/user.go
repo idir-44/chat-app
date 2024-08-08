@@ -8,7 +8,7 @@ import (
 )
 
 func (r controller) createUser(c echo.Context) error {
-	req := models.User{}
+	req := models.CreatUserRequest{}
 
 	if err := c.Bind(&req); err != nil {
 		return err
@@ -20,4 +20,18 @@ func (r controller) createUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, user)
+}
+
+func (r controller) getCurrentUser(c echo.Context) error {
+	user, err := r.getUser(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err)
+	}
+
+	res := models.User{
+		ID:    user.ID,
+		Email: user.Email,
+	}
+
+	return c.JSON(http.StatusOK, res)
 }

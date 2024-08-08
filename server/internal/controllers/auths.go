@@ -15,7 +15,7 @@ func (r controller) login(c echo.Context) error {
 		return err
 	}
 
-	token, err := r.service.Login(req)
+	user, token, err := r.service.Login(req)
 	if err != nil {
 		return err
 	}
@@ -27,5 +27,10 @@ func (r controller) login(c echo.Context) error {
 	cookie.HttpOnly = true
 	c.SetCookie(cookie)
 
-	return c.JSON(http.StatusOK, "")
+	res := models.User{
+		ID:    user.ID,
+		Email: user.Email,
+	}
+
+	return c.JSON(http.StatusOK, res)
 }

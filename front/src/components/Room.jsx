@@ -17,22 +17,22 @@ export default function Room() {
       return;
     }
 
-    const roomID = conn.url.split("/")[5];
+    const roomID = conn.url.split("/")[6];
 
     async function getUsers() {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/ws/getClients/${roomID}`,
+          `${import.meta.env.VITE_API_BASE_URL}/v1/ws/getClients/${roomID}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
           }
         );
 
         const users = await response.json();
 
         if (response.ok) {
-          console.log(users);
           setUsers(users);
         } else {
           console.error("coudn't get users");

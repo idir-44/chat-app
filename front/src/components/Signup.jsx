@@ -12,7 +12,7 @@ export default function Register() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/signup`,
+        `${import.meta.env.VITE_API_BASE_URL}/v1/users`,
         {
           method: "POST",
           headers: {

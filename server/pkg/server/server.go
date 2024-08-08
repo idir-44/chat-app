@@ -52,7 +52,12 @@ func New(config Config) Server {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.Use(middleware.CORS())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		Skipper:          middleware.DefaultSkipper,
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+		AllowCredentials: true,
+	}))
 	e.Use(middleware.Secure())
 
 	e.GET("/healthcheck", func(c echo.Context) error {

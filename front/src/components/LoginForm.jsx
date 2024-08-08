@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
@@ -18,13 +18,14 @@ export default function LoginForm() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/login`,
+        `${import.meta.env.VITE_API_BASE_URL}/v1/login`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ email, password: pwd }),
+          credentials: "include",
         }
       );
 
@@ -34,11 +35,10 @@ export default function LoginForm() {
         setEmail("");
         setPwd("");
         const user = {
-          userID: resData.ID,
+          userID: resData.id,
           email: resData.email,
         };
 
-        localStorage.setItem("authenticatedUser", JSON.stringify(user));
         setAuth(user);
         setAuthenticated(true);
 

@@ -31,6 +31,8 @@ func main() {
 	hub := ws.NewHub()
 	wsHandler := ws.NewHundler(hub)
 
+	go hub.Run()
+
 	controllers.RegisterHandlers(v1, service, wsHandler)
 
 	data, err := json.MarshalIndent(srv.Router.Routes(), "", "  ")

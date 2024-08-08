@@ -3,52 +3,32 @@ package services
 import (
 	"fmt"
 	"os"
-	"time"
 
-	"github.com/golang-jwt/jwt"
-	"github.com/google/uuid"
+	"github.com/idir-44/chat-app/internal/jwttoken"
 	"github.com/idir-44/chat-app/internal/models"
 	"github.com/idir-44/chat-app/pkg/utils"
 )
 
-func (s services) Login(req models.LoginRequest) (string, error) {
+func (s services) Login(req models.LoginRequest) (models.User, string, error) {
 	user, err := s.repository.GetUserByEmail(req.Email)
 	if err != nil {
-		return "", fmt.Errorf("bad credentials %s", err)
+		return models.User{}, "", fmt.Errorf("bad credentials %s", err)
 	}
 
 	if err := utils.CheckPassword(req.Password, user.Password); err != nil {
-		return "", fmt.Errorf("invalid password")
+		return models.User{}, "", fmt.Errorf("invalid password: %s", err)
 	}
 
 	key := os.Getenv("jwt_secret")
 	if key == "" {
-		return "", fmt.Errorf("jwt secret is not set")
+		return models.User{}, "", fmt.Errorf("jwt secret is not set")
 	}
 
-	token, err := createToken(user, key)
+	token, err := jwttoken.CreateToken(user, key)
 	if err != nil {
-		return "", err
+		return models.User{}, "", err
 	}
 
-	return token, nil
+	return user, token, nil
 
-}
-
-type jwtClaims struct {
-	models.User
-	jwt.StandardClaims
-}
-
-func createToken(user models.User, key string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
-		User: user,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-			IssuedAt:  time.Now().Unix(),
-			Id:        uuid.New().String(),
-		},
-	})
-
-	return token.SignedString([]byte(key))
 }

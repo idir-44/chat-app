@@ -15,12 +15,13 @@ export default function Lobby() {
 
   const getRooms = async () => {
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/ws/getRooms`,
+      `${import.meta.env.VITE_API_BASE_URL}/v1/ws/getRooms`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       }
     );
 
@@ -36,13 +37,14 @@ export default function Lobby() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/ws/createRoom`,
+        `${import.meta.env.VITE_API_BASE_URL}/v1/ws/createRoom`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ id: uuidv4(), name: roomName }),
+          credentials: "include",
         }
       );
 
@@ -57,7 +59,7 @@ export default function Lobby() {
 
   const joinRoom = (roomID) => {
     const ws = new WebSocket(
-      `${import.meta.env.VITE_WS_BASE_URL}/ws/joinRoom/${roomID}?userId=${
+      `${import.meta.env.VITE_WS_BASE_URL}/v1/ws/joinRoom/${roomID}?userId=${
         auth.userID
       }&email=${auth.email}`
     );

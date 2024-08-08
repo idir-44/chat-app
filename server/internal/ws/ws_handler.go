@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -112,8 +113,11 @@ func (h *WsHandler) GetClients(c echo.Context) error {
 	roomId := c.Param("roomId")
 
 	if _, ok := h.hub.Rooms[roomId]; !ok {
-		clients = make([]ClientRes, 0)
-		c.JSON(http.StatusOK, clients)
+		return fmt.Errorf("room not found")
+	}
+
+	if h.hub.Rooms[roomId].Clients == nil {
+		return fmt.Errorf("no clients in the room")
 	}
 
 	for _, client := range h.hub.Rooms[roomId].Clients {

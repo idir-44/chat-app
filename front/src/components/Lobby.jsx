@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import useAuth from "../hooks/useAuth";
 import useWebsocket from "../hooks/useWebsocket";
 
 export default function Lobby() {
   const [rooms, setRooms] = useState([]);
   const [roomName, setRoomName] = useState("");
-
-  const { auth } = useAuth();
-  const { setConn } = useWebsocket();
 
   const navigate = useNavigate();
 
@@ -57,19 +53,6 @@ export default function Lobby() {
     }
   };
 
-  const joinRoom = (roomID) => {
-    const ws = new WebSocket(
-      `${import.meta.env.VITE_WS_BASE_URL}/v1/ws/joinRoom/${roomID}?userId=${
-        auth.userID
-      }&email=${auth.email}`
-    );
-
-    if (ws.OPEN) {
-      setConn(ws);
-      navigate(`/room/${roomID}`);
-    }
-  };
-
   useEffect(() => {
     getRooms();
   }, []);
@@ -108,7 +91,7 @@ export default function Lobby() {
                 <div className="">
                   <button
                     className="px-4 text-white bg-blue-500 rounded-md"
-                    onClick={() => joinRoom(room.id)}
+                    onClick={() => navigate(`/room/${room.id}`)}
                   >
                     join
                   </button>

@@ -1,4 +1,4 @@
-package controllers
+package helpers
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (r controller) getUser(c echo.Context) (models.User, error) {
+func GetUser(c echo.Context) (models.User, error) {
 	user := c.Get("user")
 
 	if user == nil {

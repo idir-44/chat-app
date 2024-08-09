@@ -27,4 +27,5 @@ func RegisterHandlers(routerGroup *server.Router, srv services.Service, wsHandle
 	routerGroup.GET("/ws/getClients/:roomId", wsHandler.GetClients)
 
 	routerGroup.GET("/ws/joinRoom/:roomId", wsHandler.JoinRoom)
+
 }

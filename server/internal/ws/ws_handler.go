@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/idir-44/chat-app/internal/helpers"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,6 +25,11 @@ type CreateRoomReq struct {
 }
 
 func (h *WsHandler) CreateRoom(c echo.Context) error {
+	_, err := helpers.GetUser(c)
+	if err != nil {
+		return err
+	}
+
 	var req CreateRoomReq
 
 	if err := c.Bind(&req); err != nil {
@@ -48,14 +54,19 @@ var upgrader = websocket.Upgrader{
 }
 
 func (h *WsHandler) JoinRoom(c echo.Context) error {
+	user, err := helpers.GetUser(c)
+	if err != nil {
+		return err
+	}
+
 	conn, err := upgrader.Upgrade(c.Response().Writer, c.Request(), nil)
 	if err != nil {
 		return err
 	}
 
 	roomID := c.Param("roomId")
-	clientID := c.QueryParam("userId")
-	email := c.QueryParam("email")
+	email := user.Email
+	clientID := user.ID
 
 	cl := &Client{
 		Conn:    conn,
@@ -89,6 +100,11 @@ type RoomRes struct {
 }
 
 func (h *WsHandler) GetRooms(c echo.Context) error {
+	_, err := helpers.GetUser(c)
+	if err != nil {
+		return err
+	}
+
 	rooms := make([]RoomRes, 0)
 
 	for _, room := range h.hub.Rooms {
@@ -108,6 +124,11 @@ type ClientRes struct {
 }
 
 func (h *WsHandler) GetClients(c echo.Context) error {
+	_, err := helpers.GetUser(c)
+	if err != nil {
+		return err
+	}
+
 	var clients []ClientRes
 
 	roomId := c.Param("roomId")

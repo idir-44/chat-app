@@ -16,13 +16,13 @@
 
 ### Backend
 
-1. Go installation:
+1. Installations:
 
--[Install go](https://go.dev/doc/install)
+- [Install go](https://go.dev/doc/install)
 
--[Install Docker](https://docs.docker.com/engine/install/)
+- [Install Docker](https://docs.docker.com/engine/install/)
 
--[Install entr for live reload](https://github.com/eradman/entr)
+- [Install entr for live reload](https://github.com/eradman/entr) (optional)
 
 2. Navigate to the server directory:
 

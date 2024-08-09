@@ -1,24 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import useWebsocket from "../hooks/useWebsocket";
 import ChatBody from "./ChatBody";
+import { useParams } from "react-router-dom";
 
 export default function Room() {
+  const { roomId: roomID } = useParams();
   const [typedMessage, setTypedMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
 
-  const { conn } = useWebsocket();
+  const { conn } = useWebsocket(roomID);
   const { auth: user } = useAuth();
 
   useEffect(() => {
-    if (conn === null) {
-      console.log("no connextion: ", conn);
-      return;
-    }
-
-    const roomID = conn.url.split("/")[6];
-
     async function getUsers() {
       try {
         const response = await fetch(
@@ -55,11 +50,11 @@ export default function Room() {
     conn.onmessage = (message) => {
       const m = JSON.parse(message.data);
 
-      if (m.content == "A new user has joined the room") {
+      if (m.content === "A new user has joined the room") {
         setUsers([...users, { email: m.email }]);
       }
 
-      if (m.content == "user left the chat") {
+      if (m.content === "user left the chat") {
         const filteredUsers = users.filter((user) => user.email != m.email);
         setUsers([...filteredUsers]);
         setMessages([...messages, m]);

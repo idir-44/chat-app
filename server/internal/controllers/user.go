@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/idir-44/chat-app/internal/helpers"
 	"github.com/idir-44/chat-app/internal/models"
 	"github.com/labstack/echo/v4"
 )
@@ -23,7 +24,7 @@ func (r controller) createUser(c echo.Context) error {
 }
 
 func (r controller) getCurrentUser(c echo.Context) error {
-	user, err := r.getUser(c)
+	user, err := helpers.GetUser(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}

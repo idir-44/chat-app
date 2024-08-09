@@ -5,7 +5,6 @@ import "./index.css";
 
 //providers
 import { AuthProvider } from "./context/AuthProvider";
-import { WebsocketProvider } from "./context/websocketProvider";
 
 // Components
 import App from "./App.jsx";
@@ -20,21 +19,19 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <WebsocketProvider>
-          <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/signup" element={<Signup />}></Route>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/signup" element={<Signup />}></Route>
 
-            <Route element={<PersistentLogin />}>
-              <Route element={<RequireAuth />}>
-                <Route path="/lobby" element={<Lobby />} />
-                <Route path="/room/:roomId" element={<Room />} />
-              </Route>
+          <Route element={<PersistentLogin />}>
+            <Route element={<RequireAuth />}>
+              <Route path="/lobby" element={<Lobby />} />
+              <Route path="/room/:roomId" element={<Room />} />
             </Route>
+          </Route>
 
-            <Route path="*" element={<ErrorPage />} />
-          </Routes>
-        </WebsocketProvider>
+          <Route path="*" element={<ErrorPage />} />
+        </Routes>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

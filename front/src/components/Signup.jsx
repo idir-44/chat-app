@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import fetcher from "../domains/fetcher";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -11,25 +12,20 @@ export default function Register() {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/v1/users`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password: pwd }),
-        }
-      );
+      const res = await fetcher("/users", {
+        method: "POST",
+        body: JSON.stringify({ email, password: pwd }),
+      });
 
-      console.log("signup response: ", response);
-      if (response.ok) {
+      if (res) {
         setEmail("");
         setPwd("");
 
         navigate("/", { replace: true });
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -72,9 +68,7 @@ export default function Register() {
             <div className="mt-10 text-center text-sm text-gray-500">
               Already have an account ?{" "}
               <Link to={"/"}>
-                <p className="font-semibold leading-6 text-blue-500 hover:text-indigo-500 cursor-pointer">
-                  Login
-                </p>
+                <p className="cursor-pointer font-semibold leading-6 text-blue-500 hover:text-indigo-500">Login</p>
               </Link>
             </div>
           </div>

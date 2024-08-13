@@ -3,6 +3,7 @@ import useAuth from "../hooks/useAuth";
 import useWebsocket from "../hooks/useWebsocket";
 import ChatBody from "./ChatBody";
 import { useParams } from "react-router-dom";
+import fetcher from "../domains/fetcher";
 
 export default function Room() {
   const { roomId: roomID } = useParams();
@@ -16,22 +17,12 @@ export default function Room() {
   useEffect(() => {
     async function getUsers() {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/v1/ws/getClients/${roomID}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-          }
-        );
+        const res = await fetcher(`/ws/getClients/${roomID}`, {
+          method: "GET",
+        });
 
-        const users = await response.json();
-
-        if (response.ok) {
-          setUsers(users);
-        } else {
-          console.error("coudn't get users");
-          return;
+        if (res) {
+          setUsers(res);
         }
       } catch (error) {
         console.error(error);
@@ -78,25 +69,22 @@ export default function Room() {
 
   return (
     <>
-      <div className="flex flex-col w-full">
-        <div className="p-4 md:mx-6 mb-14">
+      <div className="flex w-full flex-col">
+        <div className="mb-14 p-4 md:mx-6">
           <ChatBody data={messages} />
         </div>
         <div className="fixed bottom-0 mt-4 w-full">
-          <div className="flex md:flex-row px-4 py-2 bg-grey md:mx-4 rounded-md">
-            <div className="flex w-full mr-4 rounded-md border border-blue">
+          <div className="bg-grey flex rounded-md px-4 py-2 md:mx-4 md:flex-row">
+            <div className="border-blue mr-4 flex w-full rounded-md border">
               <input
                 placeholder="type your message here"
-                className="w-full h-10 p-2 rounded-md focus:outline-none"
+                className="h-10 w-full rounded-md p-2 focus:outline-none"
                 onChange={(e) => setTypedMessage(e.target.value)}
                 value={typedMessage}
               />
             </div>
             <div className="flex items-center">
-              <button
-                className="p-2 rounded-md bg-blue-500 text-white"
-                onClick={sendMessage}
-              >
+              <button className="rounded-md bg-blue-500 p-2 text-white" onClick={sendMessage}>
                 Send
               </button>
             </div>

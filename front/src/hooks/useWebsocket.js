@@ -4,12 +4,16 @@ export default function useWebsocket(roomID) {
   const ws = useRef(null);
 
   const connectToRoom = (roomID) => {
-    const socket = new WebSocket(
-      `${import.meta.env.VITE_WS_BASE_URL}/v1/ws/joinRoom/${roomID}`
-    );
+    try {
+      const socket = new WebSocket(
+        `${import.meta.env.VITE_WS_BASE_URL}/v1/ws/joinRoom/${roomID}`
+      );
 
-    if (socket.OPEN) {
-      ws.current = socket;
+      if (socket.OPEN) {
+        ws.current = socket;
+      }
+    } catch (error) {
+      return error;
     }
   };
 
@@ -20,8 +24,10 @@ export default function useWebsocket(roomID) {
   };
 
   useEffect(() => {
-    connectToRoom(roomID);
-
+    const error = connectToRoom(roomID);
+    if (error) {
+      console.error(error);
+    }
     return () => {
       closeConnection();
     };

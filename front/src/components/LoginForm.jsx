@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import fetcher from "../domains/fetcher";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -17,26 +18,17 @@ export default function LoginForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/v1/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password: pwd }),
-          credentials: "include",
-        }
-      );
+      const res = await fetcher("/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password: pwd }),
+      });
 
-      const resData = await response.json();
-
-      if (response.ok) {
+      if (res) {
         setEmail("");
         setPwd("");
         const user = {
-          userID: resData.id,
-          email: resData.email,
+          userID: res.id,
+          email: res.email,
         };
 
         setAuth(user);
@@ -89,9 +81,7 @@ export default function LoginForm() {
             <div className="mt-10 text-center text-sm text-gray-500">
               Donn't have an account ?{" "}
               <Link to={"/signup"}>
-                <p className="font-semibold leading-6 text-blue-500 hover:text-indigo-500 cursor-pointer">
-                  Signup
-                </p>
+                <p className="cursor-pointer font-semibold leading-6 text-blue-500 hover:text-indigo-500">Signup</p>
               </Link>
             </div>
           </div>

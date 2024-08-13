@@ -76,19 +76,11 @@ func (h *WsHandler) JoinRoom(c echo.Context) error {
 		Email:   email,
 	}
 
-	m := &Message{
-		Content: "A new user has joined the room",
-		RoomId:  roomID,
-		Email:   email,
-	}
-
 	// Register a new Client
 	h.hub.Register <- cl
-	// Broadcast the message
-	h.hub.Broadcast <- m
 
 	go cl.writeMessage()
-	cl.readMessage(h.hub)
+	go cl.readMessage(h.hub)
 
 	return nil
 

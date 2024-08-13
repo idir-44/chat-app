@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import fetcher from "../domains/fetcher";
 
 export default function PersistentLogin() {
   const [isLoading, setIsloading] = useState(true);
@@ -8,25 +9,14 @@ export default function PersistentLogin() {
 
   const getCurrentUser = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/v1/me`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
-      const resData = await response.json();
-
-      if (response.ok) {
+      const res = await fetcher("/me", {
+        method: "GET",
+      });
+      if (res) {
         const user = {
-          userID: resData.id,
-          email: resData.email,
+          userID: res.id,
+          email: res.email,
         };
-
         setAuth(user);
         setAuthenticated(true);
       }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import useWebsocket from "../hooks/useWebsocket";
+import fetcher from "../domains/fetcher";
 
 export default function Lobby() {
   const [rooms, setRooms] = useState([]);
@@ -10,21 +10,11 @@ export default function Lobby() {
   const navigate = useNavigate();
 
   const getRooms = async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/v1/ws/getRooms`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      setRooms(data);
+    const res = await fetcher("/ws/getRooms", {
+      method: "GET",
+    });
+    if (res) {
+      setRooms(res);
     }
   };
 
@@ -32,19 +22,12 @@ export default function Lobby() {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/v1/ws/createRoom`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: uuidv4(), name: roomName }),
-          credentials: "include",
-        }
-      );
+      const res = await fetcher("/ws/createRoom", {
+        method: "POST",
+        body: JSON.stringify({ id: uuidv4(), name: roomName }),
+      });
 
-      if (response.ok) {
+      if (res) {
         setRoomName("");
         getRooms();
       }
@@ -59,38 +42,30 @@ export default function Lobby() {
 
   return (
     <>
-      <div className="my-8 px-4 mx-auto w-full h-full">
-        <div className="flex justify-center mt-3 p-5 gap-4">
+      <div className="mx-auto my-8 h-full w-full px-4">
+        <div className="mt-3 flex justify-center gap-4 p-5">
           <input
             type="text"
-            className="border border-grey p-2 rounded-md focus:outline-none focus:border-blue"
+            className="border-grey focus:border-blue rounded-md border p-2 focus:outline-none"
             onChange={(e) => setRoomName(e.target.value)}
             value={roomName}
           />
-          <button
-            className="text-white bg-blue-500 rounded-md p-2 "
-            onClick={createRoomHandler}
-          >
+          <button className="rounded-md bg-blue-500 p-2 text-white" onClick={createRoomHandler}>
             create room
           </button>
         </div>
         <div className="mt-6">
           <div className="font-bold">Available Rooms</div>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-6">
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-5">
             {rooms.map((room, index) => (
-              <div
-                key={index}
-                className="border border-blue-500 p-4 flex items-center rounded-md w-full"
-              >
+              <div key={index} className="flex w-full items-center rounded-md border border-blue-500 p-4">
                 <div className="w-full">
                   <div className="text-sm">room</div>
-                  <div className="text-blue-500 font-bold text-lg">
-                    {room.name}
-                  </div>
+                  <div className="text-lg font-bold text-blue-500">{room.name}</div>
                 </div>
                 <div className="">
                   <button
-                    className="px-4 text-white bg-blue-500 rounded-md"
+                    className="rounded-md bg-blue-500 px-4 text-white"
                     onClick={() => navigate(`/room/${room.id}`)}
                   >
                     join

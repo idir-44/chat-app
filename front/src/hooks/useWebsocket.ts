@@ -1,13 +1,11 @@
 import { useEffect, useRef } from "react";
 
-export default function useWebsocket(roomID) {
-  const ws = useRef(null);
+export default function useWebsocket(roomID: string) {
+  const ws = useRef<WebSocket | null>(null);
 
-  const connectToRoom = (roomID) => {
+  const connectToRoom = (roomID: string) => {
     try {
-      const socket = new WebSocket(
-        `${import.meta.env.VITE_WS_BASE_URL}/v1/ws/joinRoom/${roomID}`
-      );
+      const socket = new WebSocket(`${import.meta.env.VITE_WS_BASE_URL}/v1/ws/joinRoom/${roomID}`);
 
       if (socket.OPEN) {
         ws.current = socket;

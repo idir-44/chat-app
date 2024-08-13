@@ -1,44 +1,34 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import fetcher from "../domains/fetcher";
+import { createRoom, useRooms } from "../domains/hub";
+import { useMutation } from "@tanstack/react-query";
 
 export default function Lobby() {
-  const [rooms, setRooms] = useState([]);
   const [roomName, setRoomName] = useState("");
+  const { data: rooms, isPending, refetch } = useRooms();
 
   const navigate = useNavigate();
 
-  const getRooms = async () => {
-    const res = await fetcher("/ws/getRooms", {
-      method: "GET",
-    });
-    if (res) {
-      setRooms(res);
-    }
-  };
+  const createRoomMutation = useMutation({
+    mutationFn: createRoom,
+    onSuccess() {
+      setRoomName("");
+      refetch();
+    },
+  });
 
-  const createRoomHandler = async (e) => {
-    e.preventDefault();
+  if (isPending) {
+    return <p>Loading...</p>;
+  }
 
+  const createRoomHandler = async () => {
     try {
-      const res = await fetcher("/ws/createRoom", {
-        method: "POST",
-        body: JSON.stringify({ id: uuidv4(), name: roomName }),
-      });
-
-      if (res) {
-        setRoomName("");
-        getRooms();
-      }
+      await createRoomMutation.mutateAsync({ id: uuidv4(), name: roomName });
     } catch (error) {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    getRooms();
-  }, []);
 
   return (
     <>
@@ -57,7 +47,7 @@ export default function Lobby() {
         <div className="mt-6">
           <div className="font-bold">Available Rooms</div>
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-5">
-            {rooms.map((room, index) => (
+            {rooms?.map((room, index) => (
               <div key={index} className="flex w-full items-center rounded-md border border-blue-500 p-4">
                 <div className="w-full">
                   <div className="text-sm">room</div>

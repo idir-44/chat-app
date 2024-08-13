@@ -1,33 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import fetcher from "../domains/fetcher";
+import { useMe } from "../domains/user";
 
 export default function PersistentLogin() {
-  const [isLoading, setIsloading] = useState(true);
   const { setAuth, authenticated, setAuthenticated } = useAuth();
-
-  const getCurrentUser = async () => {
-    try {
-      const res = await fetcher("/me", {
-        method: "GET",
-      });
-      if (res) {
-        const user = {
-          userID: res.id,
-          email: res.email,
-        };
-        setAuth(user);
-        setAuthenticated(true);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const { data: user, isPending, isError } = useMe();
 
   useEffect(() => {
-    !authenticated ? getCurrentUser() : setIsloading(false);
-  }, [authenticated]);
+    if (user) {
+      setAuth(user);
+      setAuthenticated(true);
+    }
+  }, [authenticated, user]);
 
-  return <>{isLoading ? <p>Loading...</p> : <Outlet />}</>;
+  if (isPending || !authenticated) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    return <p>Error loading current user</p>;
+  }
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 }

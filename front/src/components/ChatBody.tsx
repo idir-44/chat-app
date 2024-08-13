@@ -1,20 +1,15 @@
-import React from "react";
+import { Message } from "../domains/hub";
 
-export default function ChatBody({ data }) {
+export default function ChatBody({ messages }: { messages: Message[] }) {
   return (
     <>
-      {data.map((message, index) => {
+      {messages?.map((message, index) => {
         if (message.type == "self") {
           return (
-            <div
-              className="flex flex-col mt-2 w-full text-right justify-end"
-              key={index}
-            >
+            <div className="mt-2 flex w-full flex-col justify-end text-right" key={index}>
               <div className="text-sm">{message?.email}</div>
               <div>
-                <div className="bg-blue-500 text-white px-4 py-1 rounded-md inline-block mt-1">
-                  {message?.content}
-                </div>
+                <div className="mt-1 inline-block rounded-md bg-blue-500 px-4 py-1 text-white">{message?.content}</div>
               </div>
             </div>
           );
@@ -23,7 +18,7 @@ export default function ChatBody({ data }) {
             <div className="mt-2" key={index}>
               <div className="text-sm">{message?.email}</div>
               <div>
-                <div className="bg-slate-300 text-dark-secondary px-4 py-1 rounded-md inline-block mt-1">
+                <div className="text-dark-secondary mt-1 inline-block rounded-md bg-slate-300 px-4 py-1">
                   {message?.content}
                 </div>
               </div>

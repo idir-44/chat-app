@@ -3,15 +3,21 @@ import useAuth from "../hooks/useAuth";
 import useWebsocket from "../hooks/useWebsocket";
 import ChatBody from "./ChatBody";
 import { useParams } from "react-router-dom";
-import { Message } from "../domains/hub";
+import { Message, useMessages } from "../domains/hub";
 
 export default function Room() {
   const { roomId: roomID } = useParams();
   const [typedMessage, setTypedMessage] = useState("");
+  const { messages: savedMessages, isLoading } = useMessages(roomID ?? "");
+
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { conn } = useWebsocket(roomID || "");
   const { auth: user } = useAuth();
+
+  useEffect(() => {
+    setMessages(savedMessages ?? []);
+  }, [savedMessages]);
 
   useEffect(() => {
     if (conn === null) {
@@ -37,6 +43,10 @@ export default function Room() {
     conn.send(typedMessage);
     setTypedMessage("");
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>

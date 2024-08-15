@@ -16,4 +16,8 @@ func NewRepository(db *bun.DB) Repository {
 type Repository interface {
 	CreateUser(req models.User) (models.User, error)
 	GetUserByEmail(email string) (models.User, error)
+	CreateRoom(req models.CreateRoomReq) (models.Room, error)
+	GetRooms() ([]models.Room, error)
+	SaveMessages([]models.Message) error
+	GetMessages(roomID string) ([]models.Message, error)
 }

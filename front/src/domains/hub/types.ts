@@ -4,7 +4,6 @@ export type Room = {
 };
 
 export type CreateRoomRequest = {
-  id: string;
   name: string;
 };
 

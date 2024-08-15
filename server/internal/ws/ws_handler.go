@@ -1,11 +1,11 @@
 package ws
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/websocket"
 	"github.com/idir-44/chat-app/internal/helpers"
+	"github.com/idir-44/chat-app/internal/models"
 	"github.com/labstack/echo/v4"
 )
 
@@ -19,26 +19,26 @@ func NewHundler(h *Hub) *WsHandler {
 	}
 }
 
-type CreateRoomReq struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
 func (h *WsHandler) CreateRoom(c echo.Context) error {
 	_, err := helpers.GetUser(c)
 	if err != nil {
 		return err
 	}
 
-	var req CreateRoomReq
+	var req models.CreateRoomReq
 
 	if err := c.Bind(&req); err != nil {
 		return err
 	}
 
-	h.hub.Rooms[req.ID] = &Room{
-		ID:      req.ID,
-		Name:    req.Name,
+	res, err := h.hub.repository.CreateRoom(req)
+	if err != nil {
+		return err
+	}
+
+	h.hub.Rooms[res.ID] = &Room{
+		ID:      res.ID,
+		Name:    res.Name,
 		Clients: make(map[string]*Client),
 	}
 
@@ -69,11 +69,12 @@ func (h *WsHandler) JoinRoom(c echo.Context) error {
 	clientID := user.ID
 
 	cl := &Client{
-		Conn:    conn,
-		Message: make(chan *Message, 10),
-		ID:      clientID,
-		RoomId:  roomID,
-		Email:   email,
+		Conn:     conn,
+		Message:  make(chan models.Message, 10),
+		Messages: make([]models.Message, 0),
+		ID:       clientID,
+		RoomId:   roomID,
+		Email:    email,
 	}
 
 	// Register a new Client
@@ -86,21 +87,16 @@ func (h *WsHandler) JoinRoom(c echo.Context) error {
 
 }
 
-type RoomRes struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
 func (h *WsHandler) GetRooms(c echo.Context) error {
 	_, err := helpers.GetUser(c)
 	if err != nil {
 		return err
 	}
 
-	rooms := make([]RoomRes, 0)
+	rooms := make([]models.Room, 0)
 
 	for _, room := range h.hub.Rooms {
-		rooms = append(rooms, RoomRes{
+		rooms = append(rooms, models.Room{
 			ID:   room.ID,
 			Name: room.Name,
 		})
@@ -110,35 +106,19 @@ func (h *WsHandler) GetRooms(c echo.Context) error {
 
 }
 
-type ClientRes struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-}
-
-func (h *WsHandler) GetClients(c echo.Context) error {
+func (h *WsHandler) GetMessages(c echo.Context) error {
 	_, err := helpers.GetUser(c)
 	if err != nil {
 		return err
 	}
 
-	var clients []ClientRes
+	roomID := c.Param("roomId")
 
-	roomId := c.Param("roomId")
-
-	if _, ok := h.hub.Rooms[roomId]; !ok {
-		return fmt.Errorf("room not found")
+	messages, err := h.hub.repository.GetMessages(roomID)
+	if err != nil {
+		return err
 	}
 
-	if h.hub.Rooms[roomId].Clients == nil {
-		return fmt.Errorf("no clients in the room")
-	}
+	return c.JSON(http.StatusOK, messages)
 
-	for _, client := range h.hub.Rooms[roomId].Clients {
-		clients = append(clients, ClientRes{
-			ID:    client.ID,
-			Email: client.Email,
-		})
-	}
-
-	return c.JSON(http.StatusOK, clients)
 }

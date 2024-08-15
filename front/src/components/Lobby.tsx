@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import { createRoom, useRooms } from "../domains/hub";
 import { useMutation } from "@tanstack/react-query";
 
@@ -24,7 +23,7 @@ export default function Lobby() {
 
   const createRoomHandler = async () => {
     try {
-      await createRoomMutation.mutateAsync({ id: uuidv4(), name: roomName });
+      await createRoomMutation.mutateAsync({ name: roomName });
     } catch (error) {
       console.error(error);
     }

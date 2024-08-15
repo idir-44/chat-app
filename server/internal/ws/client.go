@@ -4,20 +4,16 @@ import (
 	"log"
 
 	"github.com/gorilla/websocket"
+	"github.com/idir-44/chat-app/internal/models"
 )
 
 type Client struct {
-	Conn    *websocket.Conn
-	Message chan *Message
-	ID      string `json:"id"`
-	RoomId  string `json:"roomId"`
-	Email   string `json:"email"`
-}
-
-type Message struct {
-	Content string `json:"content"`
-	RoomId  string `json:"roomId"`
-	Email   string `json:"email"`
+	Conn     *websocket.Conn
+	Message  chan models.Message
+	Messages []models.Message
+	ID       string
+	RoomId   string
+	Email    string
 }
 
 func (c *Client) writeMessage() {
@@ -29,6 +25,10 @@ func (c *Client) writeMessage() {
 		message, ok := <-c.Message
 		if !ok {
 			return
+		}
+
+		if message.Email == c.Email {
+			c.Messages = append(c.Messages, message)
 		}
 
 		c.Conn.WriteJSON(message)
@@ -51,7 +51,7 @@ func (c *Client) readMessage(hub *Hub) {
 			break
 		}
 
-		msg := &Message{
+		msg := models.Message{
 			Content: string(m),
 			RoomId:  c.RoomId,
 			Email:   c.Email,

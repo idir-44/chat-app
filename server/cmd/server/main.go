@@ -28,7 +28,7 @@ func main() {
 
 	v1 := srv.NewGroup("/v1")
 
-	hub := ws.NewHub()
+	hub := ws.NewHub(repository)
 	wsHandler := ws.NewHundler(hub)
 
 	go hub.Run()

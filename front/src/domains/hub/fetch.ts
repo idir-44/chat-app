@@ -1,5 +1,5 @@
 import fetcher from "../fetcher";
-import { CreateRoomRequest, Room } from "./types";
+import { Client, CreateRoomRequest, Message, Room } from "./types";
 
 export const getRooms = (): Promise<Room[]> =>
   fetcher("/ws/getRooms", {
@@ -14,5 +14,10 @@ export const createRoom = (params: CreateRoomRequest): Promise<Room> =>
 
 export const getClients = (roomID: string): Promise<Client[]> =>
   fetcher(`/ws/getClients/${roomID}`, {
+    method: "GET",
+  });
+
+export const getMessages = (roomID: string): Promise<Message[]> =>
+  fetcher(`/ws/getMessages/${roomID}`, {
     method: "GET",
   });

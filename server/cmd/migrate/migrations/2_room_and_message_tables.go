@@ -21,7 +21,7 @@ func init() {
 		`
 		CREATE TABLE IF NOT EXISTS messages (
 		id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-		content VARCHAR(255) NOT NULL,
+		content TEXT NOT NULL,
 		email		VARCHAR(255) NOT NULL,
 		room_id UUID,		
 

@@ -40,7 +40,7 @@ export default function Room() {
       return;
     }
 
-    conn.send(typedMessage);
+    conn.send(typedMessage.trim());
     setTypedMessage("");
   };
 
@@ -58,6 +58,7 @@ export default function Room() {
           <div className="bg-grey flex rounded-md px-4 py-2 md:mx-4 md:flex-row">
             <div className="border-blue mr-4 flex w-full rounded-md border">
               <input
+                maxLength={255}
                 placeholder="type your message here"
                 className="h-10 w-full rounded-md p-2 focus:outline-none"
                 onChange={(e) => setTypedMessage(e.target.value)}

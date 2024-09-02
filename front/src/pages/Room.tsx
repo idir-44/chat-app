@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import useWebsocket from "../hooks/useWebsocket";
-import ChatBody from "./ChatBody";
+import ChatBody from "../components/ChatBody";
 import { useParams } from "react-router-dom";
 import { Message, useMessages } from "../domains/hub";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Room() {
   const { roomId: roomID } = useParams();
@@ -11,6 +13,8 @@ export default function Room() {
   const { messages: savedMessages, isLoading } = useMessages(roomID ?? "");
 
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const bottomRef = useRef<null | HTMLDivElement>(null);
 
   const { conn } = useWebsocket(roomID || "");
   const { auth: user } = useAuth();
@@ -33,8 +37,9 @@ export default function Room() {
     };
   }, [typedMessage, messages, conn]);
 
-  const sendMessage = () => {
-    if (typedMessage == "") return;
+  const sendMessage = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (typedMessage === "" || typedMessage.trim() === "") return;
     if (conn === null) {
       console.log("no connextion: ", conn);
       return;
@@ -42,6 +47,7 @@ export default function Room() {
 
     conn.send(typedMessage.trim());
     setTypedMessage("");
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   if (isLoading) {
@@ -50,29 +56,27 @@ export default function Room() {
 
   return (
     <>
-      <div className="flex w-full flex-col">
-        <div className="mb-14 p-4 md:mx-6">
+      <div className="mx-auto max-w-5xl">
+        <div className="mx-2 pb-20 md:mx-6">
           <ChatBody messages={messages} />
         </div>
-        <div className="fixed bottom-0 mt-4 w-full">
-          <div className="bg-grey flex rounded-md px-4 py-2 md:mx-4 md:flex-row">
-            <div className="border-blue mr-4 flex w-full rounded-md border">
-              <input
+        <div className="fixed bottom-0 left-1/2 w-full -translate-x-1/2 bg-secondary py-4">
+          <div className="mx-auto w-[70%]">
+            <form className="flex items-center gap-4" onSubmit={sendMessage}>
+              <Input
                 maxLength={255}
                 placeholder="type your message here"
-                className="h-10 w-full rounded-md p-2 focus:outline-none"
                 onChange={(e) => setTypedMessage(e.target.value)}
                 value={typedMessage}
               />
-            </div>
-            <div className="flex items-center">
-              <button className="rounded-md bg-blue-500 p-2 text-white" onClick={sendMessage}>
+              <Button disabled={typedMessage === ""} type="submit">
                 Send
-              </button>
-            </div>
+              </Button>
+            </form>
           </div>
         </div>
       </div>
+      <div ref={bottomRef} />
     </>
   );
 }

@@ -12,7 +12,7 @@ export const useRooms = () =>
 
 export const useClients = (roomID: string) =>
   useQuery({
-    queryKey: [`clients - ${roomID}`],
+    queryKey: ["clients", roomID],
     queryFn: () => getClients(roomID),
 
     enabled: !!roomID,
@@ -22,7 +22,7 @@ export const useMessages = (roomID: string) => {
   const { data: me } = useMe();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [`messages - ${roomID}`],
+    queryKey: ["messages", roomID],
     queryFn: () => getMessages(roomID),
 
     enabled: !!roomID,

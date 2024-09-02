@@ -8,12 +8,12 @@ import { AuthProvider } from "./context/AuthProvider";
 
 // Components
 import App from "./App.tsx";
-import Signup from "./components/Signup";
-import RequireAuth from "./components/RequireAuth";
+import Signup from "./pages/Signup.tsx";
+import RequireAuth from "./components/RequireAuth.tsx";
 import PersistentLogin from "./components/PersistentLogin";
 import ErrorPage from "./errorPage";
-import Lobby from "./components/Lobby";
-import Room from "./components/Room";
+import Lobby from "./pages/Lobby.tsx";
+import Room from "./pages/Room.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();

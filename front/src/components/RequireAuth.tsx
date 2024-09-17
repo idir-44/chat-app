@@ -5,9 +5,5 @@ export default function RequireAuth() {
   const { authenticated } = useAuth();
   const location = useLocation();
 
-  return authenticated ? (
-    <Outlet />
-  ) : (
-    <Navigate to={"/"} state={{ from: location }} replace />
-  );
+  return authenticated ? <Outlet /> : <Navigate to={"/"} state={{ from: location }} replace />;
 }

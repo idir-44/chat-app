@@ -5,7 +5,7 @@ import { useMe } from "../domains/user";
 
 export default function PersistentLogin() {
   const { setAuth, authenticated, setAuthenticated } = useAuth();
-  const { data: user, isPending, isError } = useMe();
+  const { data: user, isPending } = useMe();
 
   useEffect(() => {
     if (user) {
@@ -14,13 +14,10 @@ export default function PersistentLogin() {
     }
   }, [authenticated, user]);
 
-  if (isPending || !authenticated) {
+  if (isPending) {
     return <p>Loading...</p>;
   }
 
-  if (isError) {
-    return <p>Error loading current user</p>;
-  }
   return (
     <>
       <Outlet />

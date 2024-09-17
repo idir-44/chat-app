@@ -5,4 +5,5 @@ export const useMe = () =>
   useQuery({
     queryKey: ["me"],
     queryFn: getCurrentUser,
+    retry: 1,
   });

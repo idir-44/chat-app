@@ -9,7 +9,6 @@ import { AuthProvider } from "./context/AuthProvider";
 // Components
 import App from "./App.tsx";
 import Signup from "./pages/Signup.tsx";
-import RequireAuth from "./components/RequireAuth.tsx";
 import PersistentLogin from "./components/PersistentLogin";
 import ErrorPage from "./errorPage";
 import Lobby from "./pages/Lobby.tsx";
@@ -34,10 +33,8 @@ ReactDOM.createRoot(rootElement).render(
             <Route path="/signup" element={<Signup />}></Route>
 
             <Route element={<PersistentLogin />}>
-              <Route element={<RequireAuth />}>
-                <Route path="/lobby" element={<Lobby />} />
-                <Route path="/room/:roomId" element={<Room />} />
-              </Route>
+              <Route path="/lobby" element={<Lobby />} />
+              <Route path="/room/:roomId" element={<Room />} />
             </Route>
 
             <Route path="*" element={<ErrorPage />} />

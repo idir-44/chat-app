@@ -12,8 +12,6 @@ export default function PersistentLogin() {
     if (user) {
       setAuth(user);
       setAuthenticated(true);
-
-      console.log(auth, isPending);
     }
   }, [authenticated, user]);
 

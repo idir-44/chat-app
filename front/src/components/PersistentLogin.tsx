@@ -4,7 +4,7 @@ import useAuth from "../hooks/useAuth";
 import { useMe } from "../domains/user";
 
 export default function PersistentLogin() {
-  const { setAuth, auth, authenticated, setAuthenticated } = useAuth();
+  const { setAuth, authenticated, setAuthenticated } = useAuth();
   const { data: user, isPending, isError } = useMe();
   const location = useLocation();
 
